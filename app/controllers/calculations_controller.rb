@@ -11,13 +11,13 @@ class CalculationsController < ApplicationController
     # ================================================================================
 
 
-    @character_count_with_spaces = "Replace this string with your answer."
+    @character_count_with_spaces = @text.length
 
-    @character_count_without_spaces = "Replace this string with your answer."
+    @character_count_without_spaces = @text.gsub(" ", "").length
 
-    @word_count = "Replace this string with your answer."
+    @word_count = @text.split.count
 
-    @occurrences = "Replace this string with your answer."
+    @occurrences = @text.upcase.split.count(@special_word.upcase)
   end
 
   def loan_payment
@@ -32,7 +32,7 @@ class CalculationsController < ApplicationController
     # The principal value the user input is in the decimal @principal.
     # ================================================================================
 
-    @monthly_payment = "Replace this string with your answer."
+    @monthly_payment =@principal*((@apr/100)/(12.0*(1.0-(1.0+(@apr/100)/12.0)**(-@years*12.0))))
   end
 
   def time_between
@@ -48,12 +48,12 @@ class CalculationsController < ApplicationController
     #   number of seconds as a result.
     # ================================================================================
 
-    @seconds = "Replace this string with your answer."
-    @minutes = "Replace this string with your answer."
-    @hours = "Replace this string with your answer."
-    @days = "Replace this string with your answer."
-    @weeks = "Replace this string with your answer."
-    @years = "Replace this string with your answer."
+    @seconds = (@ending.to_i - @starting.to_i)
+    @minutes = (@ending.to_f - @starting.to_f)/60
+    @hours = (@ending.to_f - @starting.to_f)/60/60
+    @days = (@ending.to_f - @starting.to_f)/60/60/24
+    @weeks = (@ending.to_f - @starting.to_f)/60/60/24/7
+    @years = (@ending.to_f - @starting.to_f)/60/60/24/365
   end
 
   def descriptive_statistics
@@ -64,26 +64,69 @@ class CalculationsController < ApplicationController
     # The numbers the user input are in the array @numbers.
     # ================================================================================
 
-    @sorted_numbers = "Replace this string with your answer."
+    @sorted_numbers = @numbers.sort
 
-    @count = "Replace this string with your answer."
+    @count = @numbers.count
 
-    @minimum = "Replace this string with your answer."
+    @minimum = @numbers.min
 
-    @maximum = "Replace this string with your answer."
+    @maximum = @numbers.max
 
-    @range = "Replace this string with your answer."
+    @range = @numbers.max - @numbers.min
 
-    @median = "Replace this string with your answer."
+    @sample = 0
 
-    @sum = "Replace this string with your answer."
+    @numbers.each do |num|
+        @sample = @sample + num
+    end
 
-    @mean = "Replace this string with your answer."
+    @testing
+    if @count % 2 == 0
+        @median = (@sorted_numbers[@count/2].to_f + @sorted_numbers[@count/2-1].to_f)/2
+    elsif @count % 2 == 1
+        @median = @sorted_numbers[(@count.to_f/2.0-0.5).to_i]
+    end
 
-    @variance = "Replace this string with your answer."
 
-    @standard_deviation = "Replace this string with your answer."
+    # @median = @testing
 
-    @mode = "Replace this string with your answer."
+    @sum = @sample
+
+    @mean = @sample.to_f/@count.to_f
+
+    @sq_diff = 0.0
+
+    @numbers.each do |num|
+        @sq_diff += (num - @mean)**2
+    end
+
+    @variance = @sq_diff/@count
+
+    @standard_deviation = @variance**(0.5)
+
+    @counted_array= []
+
+    for i in 0..(@numbers.count-1)
+        @counted_array.push(Array[0])
+    end
+
+    for i in 0..(@sorted_numbers.count-1)
+        for j in 0..(@sorted_numbers.count-1)
+            if @sorted_numbers[i]==@sorted_numbers[j]
+                @counted_array[i][0] += 1
+                @counted_array[i].push(@sorted_numbers[i])
+            end
+        end
+    end
+    @highest
+
+    for i in 0..(@sorted_numbers.count-1)
+        if @sorted_numbers[i].to_i == @counted_array.max[1].to_i
+            @highest = @sorted_numbers[i]
+            break
+        end
+    end
+
+    @mode = @highest
   end
 end
